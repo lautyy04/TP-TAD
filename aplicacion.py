@@ -46,7 +46,7 @@ def generacionClientes(clientes,n:int):
     "Iván", "Rosa", "Armando", "Rocio", "Juan Pablo", "Liliana", "Diego Alejandro", "Marisol", "Fernando José"]))for _ in range (n)]
 
     #listado de fechas              #AÑO        MES             DIA
-    listadoFechas=[datetime(randint(2000,2024),randint(1,12),randint(1,28))for _ in range(n)]   #genera fechas entre ese rango de años ,meses ,dias 
+    listadoFechas=[datetime(randint(2018,2024),randint(1,12),randint(1,28))for _ in range(n)]   #genera fechas entre ese rango de años ,meses ,dias 
 
     listadoTipo=[(choice(["MEDIA","BASICO","PREMIUM"]))for _ in range(n)]   
 
@@ -90,7 +90,7 @@ def generacionColaClientes(cola,n:int):
     "Iván", "Rosa", "Armando", "Rocio", "Juan Pablo", "Liliana", "Diego Alejandro", "Marisol", "Fernando José"]))for _ in range (n)]
 
     #TENER EN CUENTA QUE SOLO ES EL ULTIMO MES ( SOLO TOMA EL AÑO 2024)
-    listadoFechas=[datetime(randint(2024,2024),randint(1,12),randint(1,28))for _ in range(n)]   #genera fechas entre ese rango de años ,meses ,dias 
+    listadoFechas=[datetime(randint(2022,2024),randint(1,12),randint(1,28))for _ in range(n)]   #genera fechas entre ese rango de años ,meses ,dias 
 
     listadoTipo=[(choice(["MEDIA","BASICO","PREMIUM"]))for _ in range(n)]   
 
@@ -146,8 +146,9 @@ def opcion1(clientes):
         print("datos mal pasados")                           
     
     nuevoCliente=crearClient()                                  #declaramos la funcion
+    #agregarClientes(clientes,nuevoCliente)                      #si se pone antes (se muestra al final de la lista de clietnes)
     cargarClient(nuevoCliente,nro,dni,ape,nom,fech,tip,prec)    #cargamos cliente
-    agregarClientes(clientes,nuevoCliente)                      #agregamos cliente
+    agregarClientes(clientes,nuevoCliente)                     #importa el orden (se muestra al principio)
 
 #FUNCION DE MODIFICAR CLIENTE POR SU NUMERO DE CLIENTE
 def opcion2(clientes):          
@@ -296,14 +297,18 @@ def opcion6(clientes):
         k=k+1
 
 #COLA DE CLIENTES QUE SE DIERON DE ALTA DEL ULTIMO MES 
-def opcion8(cola):
-    fechaActual = datetime.strptime(input("ingrese la fecha en el siguiente formato dd/mm/yyyy").strip(), "%d/%m/%Y")
-    colaAuxiliar = crearCola()              #creamos cola auxiliar
-    copiarCola(colaAuxiliar, cola)          #copiamos la cola en la cola auxiliar
+            
+def opcion8(clientes, cola):
 
-    i = 1
-    clientesEncontradas = False          #para ver si se encontraron clientes ( dentro del codigo poner =true)   
+    fechaActual=datetime.strptime(input("ingrese la fecha en el siguiente formato dd/mm/yyyy").strip(),"%d/%m/%Y")
+    # Crear una cola auxiliar vacía
+    colaAuxiliar = crearCola()
+    # Copiar la cola original a la auxiliar
+    copiarCola(colaAuxiliar, cola)
 
+    j=0 
+    clientesEncontradas = False
+    #Mientras que la cola no este vacaia
     while not esVacia(colaAuxiliar):        #verifica si tiene o no
         client = desencolar(colaAuxiliar)  # en cada desencolacion muestra un cliente t una fecha en la variable "fecha"
         fecha = verFecha(client)            # vemos la fecha del cliente
@@ -312,15 +317,48 @@ def opcion8(cola):
             antiguedad = (fechaActual.month - fecha.month)      #verificamos que sea menos/ igual a un mes
             if antiguedad <= 1:
                 clientesEncontradas = True                      
-                print(f" cliente#{i}")
-                imprimirCliente(client)
-                i += 1
+                
+                j += 1
+                agregarClientes(clientes,client)
 
-    print(f"Total de clientes dados de alta del ultimo mes: {i - 1}")   #muestra la cantidad de clientes que 
+    print(f"Total de clientes dados de alta del ultimo mes de la cola: {j}")   #muestra la cantidad de clientes que 
 
     if not clientesEncontradas:
         print("No se encontraron clientes en la cola que se hayan dado de alta el ultimo mes")
-            
+    
+    
+
+    print("==================================================")
+
+    print("LISTA DE CLIENTES DEL ULTIMO MES")
+
+    tam = tamanio(clientes)
+    
+    l=0
+    k = 0
+    i=1
+    montoRecaudado=0.0                                  #INICIAZAR EN FLOAT
+    while (k < tam):
+        #Mientras haya tareas en la lista de tareas 
+        client = recuperarClientes(clientes, k)
+        #Si se cumple la condicion se imprimira la tarea
+        fecha = verFecha(client)            # vemos la fecha del cliente
+
+        if fecha.year == fechaActual.year and fecha.month <= fechaActual.month:     
+            antiguedad = (fechaActual.month - fecha.month)      #verificamos que sea menos/ igual a un mes
+            if antiguedad <= 1:
+                print(f"CLIENTE #{i}",end='')                      #el end es para que separe los clientes 
+                imprimirCliente(client)
+                
+                montoRecaudado += verPrecio(client)  # Sumar el monto del cliente
+                l+=1
+
+                
+        k = k + 1
+        i+=1
+    print(f"TOTAL DE CLIENTES DEL ULTIMO MES {l}")
+    print(f"MONTO RECAUDADO EL ULTIMO MES: {montoRecaudado:.2f}")
+     
 
     
     
@@ -357,7 +395,7 @@ while True:
             case 7:
                opcion7(clientes)
             case 8:
-                opcion8(cola)#
+                opcion8(clientes,cola)#
             case _:
                 print("opcion invalida")
         espera = input("presione enter para continuar")

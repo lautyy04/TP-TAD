@@ -16,7 +16,7 @@ def eliminarClientes(clientes,client):
 
 def recuperarClientes(clientes,i):
     #retorna el cliente de la posición asignada    
-    return clientes[i]
+    return clientes[i-1]
 
 def tamanio(clientes):
     #retorna la cantidad de clientes en el sistema

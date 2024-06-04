@@ -80,5 +80,14 @@ def modPre(client,prec):
     #modificar precio del servicio
     client[6]=prec    
 
+def copiarClient(client1,client2):
+    #Asigna datos de cliente1 a cliente2
+    modNom(client1,verNombre(client2))
+    modNro(client1,verNumero(client2))
+    modApe(client1,verApellido(client2))
+    modFech(client1,verFecha(client2))
+    modTip(client1,verTipo(client2))
+    modPre(client1,verPrecio(client2))
 
+    
     
